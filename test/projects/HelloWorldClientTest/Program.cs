@@ -12,7 +12,7 @@ namespace HelloWorldClientTest
     {
         static void Main(string[] args)
         {
-            var socket = IO.Socket("http://ec2-54-201-123-21.us-west-2.compute.amazonaws.com:8080");
+            var socket = IO.Socket("http://localhost:3000");
 
             socket.On(Socket.EVENT_CONNECT, () =>
             {
