@@ -77,7 +77,7 @@ io.sockets.on('connection', function (socket) {
                     if (data.pos == 0 && wall == 0)
                         socketList[clientList.length - 1].emit('neighborChange', JSON.stringify(nuevoVecinoDerecho));
                     else
-                        socketList[parseInt(data.pos) + 1].emit('neighborChange', JSON.stringify(nuevoVecinoDerecho));
+                        socketList[parseInt(data.pos) - 1].emit('neighborChange', JSON.stringify(nuevoVecinoDerecho));
                 }
             }
 
