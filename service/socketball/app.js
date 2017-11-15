@@ -75,9 +75,9 @@ io.sockets.on('connection', function (socket) {
 
                     // Comprobamos si el usuario actual es el primero y wall 0 para enviar la notificacion al ultimo de la lista, si no, notificamos al anterior de nuestra posición actual
                     if (data.pos == 0 && wall == 0)
-                        socketList[clientList.length - 1].emit('neighborChange', JSON.stringify(nuevoVecinoIzquierdo));
+                        socketList[clientList.length - 1].emit('neighborChange', JSON.stringify(nuevoVecinoDerecho));
                     else
-                        socketList[parseInt(data.pos) + 1].emit('neighborChange', JSON.stringify(nuevoVecinoIzquierdo));
+                        socketList[parseInt(data.pos) + 1].emit('neighborChange', JSON.stringify(nuevoVecinoDerecho));
                 }
             }
 
