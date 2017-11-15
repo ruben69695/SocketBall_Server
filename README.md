@@ -13,7 +13,7 @@ Here some information about the developing tools we used and other important thi
 * Visual Studio Community 2017
 * Visual Studio Code
 
-### Arquitechture
+### Architecture
 * Server - Client
 
 ### Implementation
