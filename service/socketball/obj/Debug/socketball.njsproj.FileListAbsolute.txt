@@ -1,0 +1,3 @@
+C:\Users\Ruben\OneDrive\Estudios\Educem\DAM3-ASIX\NET\Projects\4-SocketBall\SocketBall_Server\service\socketball\obj\Debug\socketball.njsprojResolveAssemblyReference.cache
+C:\Users\Ruben\OneDrive\Estudios\Educem\DAM3-ASIX\NET\Projects\4-SocketBall\SocketBall_Server\service\socketball\obj\Debug\socketball.njsproj.CoreCompileInputs.cache
+C:\Users\Ruben\OneDrive\Estudios\Educem\DAM3-ASIX\NET\Projects\4-SocketBall\SocketBall_Server\service\socketball\bin\Microsoft.NodejsTools.WebRole.dll
