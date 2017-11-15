@@ -57,18 +57,12 @@ io.sockets.on('connection', function (socket) {
                         "cliente": thisCliente
                     }
 
-                    // Notificamos al vecino izquierdo que somos su derecho
-                    socketList[parseInt(data.pos) + 1].emit('neighborChange', JSON.stringify(nuevoVecinoIzquierdo));
+                    // Comprobamos si el usuario actual es el ultimo y wall 0 para enviar la notificacion al primero de la lista, si no, notificamos al siguiente de nuestra posición actual
+                    if (clientList.length - 1 == data.pos && wall == 0)         
+                        socketList[0].emit('neighborChange', JSON.stringify(nuevoVecinoIzquierdo));
+                    else
+                        socketList[parseInt(data.pos) + 1].emit('neighborChange', JSON.stringify(nuevoVecinoIzquierdo));
                 }
-                //else
-                //{
-                //    var nuevoVecinoIzquierdo = {
-                //        "pos": "I",
-                //        "cliente": null
-                //    }
-
-                //    socketList[0].emit('neighborChange', JSON.stringify(nuevoVecinoDerecho));
-                //}
 
                 // Si no eres el primero o walles es 0
                 if (data.pos != 0 || wall == 0)
@@ -78,16 +72,13 @@ io.sockets.on('connection', function (socket) {
                         "pos": "D",
                         "cliente": thisCliente
                     }
-                    socketList[parseInt(data.pos) - 1].emit('neighborChange', JSON.stringify(nuevoVecinoDerecho));
+
+                    // Comprobamos si el usuario actual es el primero y wall 0 para enviar la notificacion al ultimo de la lista, si no, notificamos al anterior de nuestra posición actual
+                    if (data.pos == 0 && wall == 0)
+                        socketList[clientList.length - 1].emit('neighborChange', JSON.stringify(nuevoVecinoIzquierdo));
+                    else
+                        socketList[parseInt(data.pos) + 1].emit('neighborChange', JSON.stringify(nuevoVecinoIzquierdo));
                 }
-                //else
-                //{
-                //    var nuevoVecinoDerecho = {
-                //        "pos": "D",
-                //        "cliente": null
-                //    }
-                //    socketList[clientList.length - 1].emit('neighborChange', JSON.stringify(nuevoVecinoIzquierdo));
-                //}
             }
 
             // Enviamos mensajes al cliente de que todo es correcto.
