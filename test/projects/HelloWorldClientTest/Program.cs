@@ -17,9 +17,8 @@ namespace HelloWorldClientTest
             socket.On(Socket.EVENT_CONNECT, () =>
             {
                 Console.WriteLine("Connected to the socket");
-                var text = new { text = "Hello World Server" };
-                string json = JsonConvert.SerializeObject(text);
-                socket.Emit("helloServer", json);
+                string json = "{\"pcs\":[{\"nom\":\"Chikorita\",\"IP\":\"192.168.3.45\"}],\"cliente\":{\"nom\":\"Ruben\",\"IP\":\"192.168.3.58\"},\"pos\":\"1\"}";
+                socket.Emit("selectPosition", json);
             });
 
             socket.On("helloClient", (data) =>
@@ -28,6 +27,11 @@ namespace HelloWorldClientTest
                 var t = JsonConvert.DeserializeAnonymousType((string)data, text);
                 Console.WriteLine(t.text);
             });
+
+            socket.On("neighborChange", (data) => {
+                Console.WriteLine(data.ToString());
+            });
+
 
             Console.ReadLine();
         }
