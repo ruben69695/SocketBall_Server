@@ -17,7 +17,7 @@ namespace HelloWorldClientTest
             socket.On(Socket.EVENT_CONNECT, () =>
             {
                 Console.WriteLine("Connected to the socket");
-                string json = "{\"pcs\":[{\"nom\":\"Chikorita\",\"IP\":\"192.168.3.45\"}],\"cliente\":{\"nom\":\"Ruben\",\"IP\":\"192.168.3.58\"},\"pos\":\"1\"}";
+                string json = "{\"pcs\":[{\"nom\":\"Chikorita\",\"IP\":\"192.168.3.45\"}],\"cliente\":{\"nom\":\"Ruben\",\"IP\":\"192.168.3.58\"},\"pos\":1, \"wall\":0}";
                 socket.Emit("selectPosition", json);
             });
 
@@ -29,6 +29,11 @@ namespace HelloWorldClientTest
             });
 
             socket.On("neighborChange", (data) => {
+                Console.WriteLine(data.ToString());
+            });
+
+            socket.On("gameInfo", (data) =>
+            {
                 Console.WriteLine(data.ToString());
             });
 
