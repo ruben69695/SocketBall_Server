@@ -4,6 +4,7 @@ var express = require('express');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+var sem_SelectPosition = require('semaphore')(1);
 var Client = require("./classes/client.js");
 const _PORT = 3000;
 
@@ -31,16 +32,37 @@ io.sockets.on('connection', function (socket) {
         socket.emit('gameInfo', infoPartida);
     }
 
-    socket.on('selectPosition', function (json) {
-        var data = JSON.parse(json);
+    function enterToSemaphore(operation, json) {
 
+        sem_SelectPosition.take(1, function() {
+            switch (operation) {
+                case "selectPosition":
+                    console.log("FunciÃ³n select position");
+                    selectPosition(json);
+                break;
+                case "disconnect":
+                    console.log("FunciÃ³n disconnect");
+                    disconnectClient();
+                break;
+                default:
+                    console.log("Ha entrado en el default");
+                    break;
+            }
+            sem_SelectPosition.leave(1);
+        });
+
+    }
+
+    function selectPosition(json) {
+        var data = JSON.parse(json);
+        
         // Listas coinciden
         if (JSON.stringify(data.pcs) == JSON.stringify(clientList))
         {
-            // Guardamos cliente en la posicón deseada en la lista
+            // Guardamos cliente en la posicï¿½n deseada en la lista
             clientList.splice(data.pos, 0, data.cliente);
 
-            // Guardamos el socket en la posición deseada en la lista de sockets
+            // Guardamos el socket en la posiciï¿½n deseada en la lista de sockets
             socketList.splice(data.pos, 0, socket);
 
             thisCliente = data.cliente;
@@ -48,7 +70,7 @@ io.sockets.on('connection', function (socket) {
             // Avisamos a los vecinos de que tienen un nuevo vecino, solo cuando haya mas de 1 jugador en la partida
             if (clientList.length > 1) 
             {
-                // No eres último o wall es 0
+                // No eres ï¿½ltimo o wall es 0
                 if (clientList.length - 1 != data.pos || wall == 0)
                 {
                     // Avisamos al vecino derecho de que somos su izquierdo
@@ -57,11 +79,11 @@ io.sockets.on('connection', function (socket) {
                         "cliente": thisCliente
                     }
 
-                    // Comprobamos si el usuario actual es el ultimo y wall 0 para enviar la notificacion al primero de la lista, si no, notificamos al siguiente de nuestra posición actual
+                    // Comprobamos si el usuario actual es el ultimo y wall 0 para enviar la notificacion al primero de la lista, si no, notificamos al siguiente de nuestra posiciï¿½n actual
                     if (clientList.length - 1 == data.pos && wall == 0)         
                         socketList[0].emit('neighborChange', JSON.stringify(nuevoVecinoIzquierdo));
                     else
-                        socketList[parseInt(data.pos) + 1].emit('neighborChange', JSON.stringify(nuevoVecinoIzquierdo));
+                        socketList[data.pos + 1].emit('neighborChange', JSON.stringify(nuevoVecinoIzquierdo));
                 }
 
                 // Si no eres el primero o walles es 0
@@ -73,12 +95,16 @@ io.sockets.on('connection', function (socket) {
                         "cliente": thisCliente
                     }
 
-                    // Comprobamos si el usuario actual es el primero y wall 0 para enviar la notificacion al ultimo de la lista, si no, notificamos al anterior de nuestra posición actual
+                    // Comprobamos si el usuario actual es el primero y wall 0 para enviar la notificacion al ultimo de la lista, si no, notificamos al anterior de nuestra posiciï¿½n actual
                     if (data.pos == 0 && wall == 0)
                         socketList[clientList.length - 1].emit('neighborChange', JSON.stringify(nuevoVecinoDerecho));
                     else
-                        socketList[parseInt(data.pos) - 1].emit('neighborChange', JSON.stringify(nuevoVecinoDerecho));
+                        socketList[data.pos - 1].emit('neighborChange', JSON.stringify(nuevoVecinoDerecho));
                 }
+            }
+            else
+            {
+                wall = data.wall;
             }
 
             // Enviamos mensajes al cliente de que todo es correcto.
@@ -93,10 +119,11 @@ io.sockets.on('connection', function (socket) {
 
             socket.emit('gameInfo', reInfoPartida);
         }
-    });
-    socket.on('disconnect', function () {
-        console.log("The client with IP %s has disconnected from the server", socket.conn.remoteAddress);
+    }
 
+    function disconnectClient() {
+        console.log("The client with IP %s has disconnected from the server", socket.conn.remoteAddress);
+        
         if (clientList.length > 1)
         {
             var i = clientList.indexOf(thisCliente);
@@ -191,9 +218,17 @@ io.sockets.on('connection', function (socket) {
         }
         else
         {
+            // Vaciamos las arrays de clientes y sockets cuando sale el ultimo cliente
             clientList = [];
             socketList = [];
         }
+    }
+
+    socket.on('selectPosition', function (json) {
+        enterToSemaphore("selectPosition", json);
+    });
+    socket.on('disconnect', function () {
+        enterToSemaphore("disconnect", "");
     });
 
 });
