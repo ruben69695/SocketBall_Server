@@ -4,7 +4,7 @@ var express = require('express');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-var sem_SelectPosition = require('semaphore')(1);
+var sem = require('semaphore')(1);
 var Client = require("./classes/client.js");
 const _PORT = 3000;
 
@@ -32,9 +32,21 @@ io.sockets.on('connection', function (socket) {
         socket.emit('gameInfo', infoPartida);
     }
 
+    socket.on('selectPosition', function (json) {
+        enterToSemaphore("selectPosition", json);
+    });
+    socket.on('disconnect', function () {
+        enterToSemaphore("disconnect", "");
+    });
+
+    /**
+     * Función que controla con un semaforo los accesos a elegir posición y desconectarse
+     * @param {Elegir operación} operation 
+     * @param {Información a pasarle a la función en formato json u otro formato} json 
+     */
     function enterToSemaphore(operation, json) {
 
-        sem_SelectPosition.take(1, function() {
+        sem.take(1, function() {
             switch (operation) {
                 case "selectPosition":
                     console.log("Función select position");
@@ -48,11 +60,15 @@ io.sockets.on('connection', function (socket) {
                     console.log("Ha entrado en el default");
                     break;
             }
-            sem_SelectPosition.leave(1);
+            sem.leave(1);
         });
 
     }
 
+    /**
+     * Función que permite escoger una posición definida en el JSON y avisa a los vecinos de los cambios pertinentes
+     * @param {Información en json sobre la partida} json 
+     */
     function selectPosition(json) {
         var data = JSON.parse(json);
         
@@ -121,6 +137,9 @@ io.sockets.on('connection', function (socket) {
         }
     }
 
+    /**
+     * Función que nos permite desconectarnos del servidor y corregir la array
+     */
     function disconnectClient() {
         console.log("The client with IP %s has disconnected from the server", socket.conn.remoteAddress);
         
@@ -223,12 +242,4 @@ io.sockets.on('connection', function (socket) {
             socketList = [];
         }
     }
-
-    socket.on('selectPosition', function (json) {
-        enterToSemaphore("selectPosition", json);
-    });
-    socket.on('disconnect', function () {
-        enterToSemaphore("disconnect", "");
-    });
-
 });
