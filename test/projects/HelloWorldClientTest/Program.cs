@@ -17,7 +17,8 @@ namespace HelloWorldClientTest
             socket.On(Socket.EVENT_CONNECT, () =>
             {
                 Console.WriteLine("Connected to the socket");
-                string json = "{\"pcs\":[{\"nom\":\"Chikorita\",\"IP\":\"192.168.3.45\"}],\"cliente\":{\"nom\":\"Ruben\",\"IP\":\"192.168.3.58\"},\"pos\":1, \"wall\":0}";
+                //string json = "{\"pcs\":[{\"Name\":\"Chikorita\",\"Ip\":\"192.168.3.45\"}],\"cliente\":{\"Name\":\"Ruben\",\"Ip\":\"192.168.3.58\"},\"pos\":1, \"wall\":0}";
+                string json = "{\"pcs\":[],\"cliente\":{\"Name\":\"Chikorita\",\"Ip\":\"192.168.3.45\"},\"pos\":0, \"wall\":1}";
                 socket.Emit("selectPosition", json);
             });
 
