@@ -2,9 +2,9 @@
 
 module.exports = class client {
     
-    constructor(nom, IP, socket) {
-        this.nom = nom;
-        this.IP = IP;
+    constructor(nom, IP) {
+        this.Name = nom;
+        this.Ip = IP;
     }
     
     getNeighborJSON(clients_array,walls) {
