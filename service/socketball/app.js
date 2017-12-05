@@ -23,13 +23,7 @@ io.sockets.on('connection', function (socket) {
     console.log("A client with IP %s has connected to the socket", socket.conn.remoteAddress);
 
     if (clientList.indexOf(thisCliente) == -1) {
-
-        var infoPartida = {
-            "wall": wall,
-            "pcs": clientList
-        }
-
-        socket.emit('gameInfo', infoPartida);
+        emitGameInfo();
     }
 
     socket.on('selectPosition', function (json) {
@@ -38,6 +32,21 @@ io.sockets.on('connection', function (socket) {
     socket.on('disconnect', function () {
         enterToSemaphore("disconnect", "");
     });
+
+    socket.on('refreshGameInfo', function () {
+        emitGameInfo();
+    });
+
+
+    function emitGameInfo()
+    {
+        var infoPartida = {
+            "wall": wall,
+            "pcs": clientList
+        }
+
+        socket.emit('gameInfo', infoPartida);
+    }
 
     /**
      * Función que controla con un semaforo los accesos a elegir posición y desconectarse
